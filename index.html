@@ -3,161 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Аудиорекордер | Профессиональная запись</title>
+    <title>Аудиорекордер | Транскрибация вкладки</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://cdn.jsdelivr.net/npm/font-source@1.0.0/css/Inter.min.css');
-        
-        body { font-family: 'Inter', sans-serif; background-color: #0b1120; color: #e2e8f0; }
-        .glass-panel { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(148, 163, 184, 0.1); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); }
-        .btn-primary { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-        .btn-primary:hover:not(:disabled) { background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4); }
-        .btn-danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-        .btn-danger:hover:not(:disabled) { background: linear-gradient(135deg, #f87171 0%, #ef4444 100%); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4); }
-        .btn-secondary { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(71, 85, 105, 0.4); transition: all 0.2s ease; }
-        .btn-secondary:hover:not(:disabled) { background: rgba(51, 65, 85, 0.8); border-color: rgba(100, 116, 139, 0.6); }
-        .btn-icon { background: rgba(51, 65, 85, 0.4); border: 1px solid rgba(71, 85, 105, 0.3); }
-        .btn-icon:hover:not(:disabled) { background: rgba(71, 85, 105, 0.6); }
-        .btn-icon.active { background: rgba(59, 130, 246, 0.2); border-color: #3b82f6; color: #60a5fa; }
-        
-        .meter-container { background: #1e293b; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); }
-        .meter-fill { background: linear-gradient(90deg, #10b981 0%, #34d399 100%); box-shadow: 0 0 10px rgba(16, 185, 129, 0.3); transition: width 0.1s linear; }
-        .meter-fill.tab { background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%); box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); }
-
-        .toggle-switch { position: relative; width: 36px; height: 20px; }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #334155; transition: .3s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
-        input:checked + .slider { background-color: #10b981; }
-        input.tab:checked + .slider { background-color: #3b82f6; }
-        input:checked + .slider:before { transform: translateX(16px); }
-
-        .select-custom { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.5rem center; background-size: 1.5em 1.5em; appearance: none; }
-        
-        .pulse-ring { animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; }
-        @keyframes pulse-ring { 0% { transform: scale(0.33); } 80%, 100% { opacity: 0; } }
-
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
+        body { font-family: 'Inter', sans-serif; background: #0b1120; color: #e2e8f0; }
+        .glass { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(148, 163, 184, 0.1); box-shadow: 0 12px 30px rgba(0,0,0,0.4); }
+        .btn-primary { background: linear-gradient(135deg, #3b82f6, #2563eb); transition: all 0.2s; }
+        .btn-primary:hover:not(:disabled) { background: linear-gradient(135deg, #60a5fa, #3b82f6); transform: translateY(-1px); }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); transition: all 0.2s; }
+        .btn-danger:hover:not(:disabled) { background: linear-gradient(135deg, #f87171, #ef4444); transform: translateY(-1px); }
+        .btn-secondary { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(71, 85, 105, 0.4); transition: all 0.2s; }
+        .btn-secondary:hover { background: rgba(51, 65, 85, 0.8); }
+        .meter-bg { background: #1e293b; box-shadow: inset 0 1px 2px rgba(0,0,0,0.3); }
+        .meter-fill { background: linear-gradient(90deg, #10b981, #34d399); box-shadow: 0 0 8px rgba(16,185,129,0.3); transition: width 0.05s linear; }
+        .toggle { position: relative; width: 36px; height: 20px; cursor: pointer; }
+        .toggle input { opacity: 0; width: 0; height: 0; }
+        .toggle-track { position: absolute; inset: 0; background: #334155; border-radius: 99px; transition: 0.2s; }
+        .toggle-track::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; background: #fff; border-radius: 50%; transition: 0.2s; }
+        .toggle input:checked + .toggle-track { background: #10b981; }
+        .toggle input:checked + .toggle-track::after { transform: translateX(16px); }
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 selection:bg-blue-500 selection:text-white">
+<body class="min-h-screen flex items-center justify-center p-4 selection:bg-blue-500">
 
-    <main class="w-full max-w-6xl glass-panel rounded-2xl overflow-hidden relative z-10">
-        
+    <main class="w-full max-w-6xl glass rounded-2xl overflow-hidden mt-4">
         <!-- Header -->
-        <header class="px-6 py-5 border-b border-slate-700/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-r from-slate-800/40 to-transparent">
+        <header class="px-6 py-4 border-b border-slate-700/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-gradient-to-r from-slate-800/30 to-transparent">
             <div>
-                <h1 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3 tracking-tight">
-                    <div class="w-10 h-10 rounded-xl bg-blue-600/20 flex items-center justify-center text-blue-400 border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.15)]">
-                        <i class="fas fa-wave-square"></i>
-                    </div>
-                    Аудиорекордер
-                </h1>
-                <p class="text-slate-400 text-sm mt-1.5 ml-[52px]">Запись, транскрибация и микширование источников</p>
+                <h1 class="text-xl font-bold text-white flex items-center gap-2"><i class="fas fa-wave-square text-blue-400"></i> Аудиорекордер</h1>
+                <p class="text-slate-400 text-xs mt-1">Запись • Микширование • Транскрибация</p>
             </div>
-            <div id="status-badge" class="px-3 py-1.5 rounded-full bg-slate-800/80 border border-slate-700/50 text-xs font-medium text-slate-400 flex items-center gap-2 shadow-lg">
-                <span class="relative flex h-2.5 w-2.5">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-slate-500"></span>
-                </span>
-                Ожидание подключения
+            <div id="status-badge" class="px-3 py-1.5 rounded-full bg-slate-800/80 border border-slate-700/50 text-xs font-medium text-slate-400 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-slate-500"></span> Ожидание
             </div>
         </header>
 
         <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
             
-            <!-- LEFT COLUMN: Controls -->
-            <div class="lg:col-span-4 space-y-6">
+            <!-- LEFT: Controls -->
+            <div class="lg:col-span-4 space-y-5">
                 
-                <!-- Device Selector -->
-                <div class="bg-slate-800/30 p-4 rounded-xl border border-slate-700/50 space-y-3">
-                    <div class="flex justify-between items-center">
-                        <label class="text-xs font-semibold uppercase tracking-wider text-slate-500">Входное устройство</label>
-                        <button id="btn-refresh-devices" class="text-slate-400 hover:text-white transition-colors" title="Обновить список">
-                            <i class="fas fa-sync-alt text-xs"></i>
-                        </button>
-                    </div>
-                    <select id="device-select" class="select-custom w-full bg-slate-900/50 border border-slate-700/50 text-slate-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 cursor-pointer">
-                        <option value="">Поиск устройств...</option>
-                    </select>
-                    <p class="text-[10px] text-amber-400/80 leading-tight flex items-start gap-1.5 mt-2">
-                        <i class="fas fa-info-circle mt-0.5"></i>
-                        <span>Для транскрибации звука с вкладки выберите <b>Stereo Mix</b> или <b>VB-Cable</b> в настройках звука системы. Браузер использует системный микрофон по умолчанию.</span>
-                    </p>
+                <!-- Setup Guide Toggle -->
+                <button id="btn-guide" class="w-full py-2.5 px-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-sm font-medium flex items-center justify-center gap-2 hover:bg-amber-500/20 transition">
+                    <i class="fas fa-info-circle"></i> Как настроить транскрибацию вкладки?
+                </button>
+                <div id="guide-panel" class="hidden p-4 rounded-xl bg-amber-900/20 border border-amber-700/40 text-xs text-amber-200 space-y-2 leading-relaxed">
+                    <p class="font-bold text-amber-400">⚠️ Важное ограничение браузера:</p>
+                    <p>API транскрибации (<code class="bg-black/30 px-1 rounded">SpeechRecognition</code>) <b>всегда</b> слушает устройство записи по умолчанию в Windows/macOS. Он игнорирует внутренние потоки вкладки.</p>
+                    <p class="pt-2 font-bold text-amber-400">✅ Чтобы транскрибировать вкладку:</p>
+                    <ol class="list-decimal pl-4 space-y-1">
+                        <li>Установите <b>Stereo Mix</b> или <b>VB-Cable</b> как "Устройство записи по умолчанию" в системе.</li>
+                        <li>Направьте звук браузера на этот виртуальный кабель.</li>
+                        <li>Вернитесь сюда и нажмите "Проверить вход".</li>
+                    </ol>
+                    <button id="btn-close-guide" class="mt-2 text-[10px] underline hover:text-white">Понятно, закрыть</button>
                 </div>
 
-                <!-- Transport Controls -->
-                <div class="bg-slate-800/30 p-4 rounded-xl border border-slate-700/50">
+                <!-- Transport -->
+                <div class="bg-slate-800/30 p-4 rounded-xl border border-slate-700/50 space-y-3">
+                    <button id="btn-init" class="w-full py-3 px-4 rounded-xl btn-secondary text-slate-200 font-medium flex items-center justify-center gap-2">
+                        <i class="fas fa-plug"></i> Инициализировать аудио
+                    </button>
+                    
                     <div class="grid grid-cols-2 gap-3">
-                        <button id="btn-connect" class="col-span-2 py-3 px-4 rounded-xl btn-secondary text-slate-200 font-medium flex items-center justify-center gap-2">
-                            <i class="fas fa-plug"></i> Подключить источники
+                        <button id="btn-start" class="col-span-2 py-3 px-4 rounded-xl btn-primary text-white font-bold flex items-center justify-center gap-2 shadow-lg hidden" disabled>
+                            <i class="fas fa-circle text-xs"></i> Начать запись
                         </button>
-                        
-                        <button id="btn-start" class="col-span-2 py-3.5 px-4 rounded-xl btn-primary text-white font-bold flex items-center justify-center gap-2 shadow-lg hidden" disabled>
-                            <i class="fas fa-microphone"></i> Начать запись
-                        </button>
-                        
-                        <button id="btn-pause" class="py-3 px-4 rounded-xl btn-secondary text-yellow-400 font-medium flex items-center justify-center gap-2 border border-yellow-600/30 hidden" disabled>
+                        <button id="btn-pause" class="py-3 px-4 rounded-xl btn-secondary text-yellow-400 font-medium flex items-center justify-center gap-2 border border-yellow-600/30 hidden">
                             <i class="fas fa-pause"></i>
                         </button>
-                        
-                        <button id="btn-stop" class="py-3 px-4 rounded-xl btn-danger text-white font-medium flex items-center justify-center gap-2 shadow-lg hidden" disabled>
+                        <button id="btn-stop" class="py-3 px-4 rounded-xl btn-danger text-white font-medium flex items-center justify-center gap-2 shadow-lg hidden">
                             <i class="fas fa-stop"></i>
                         </button>
                     </div>
-                    
-                    <div id="timer-display" class="mt-4 flex items-center justify-center py-3 bg-slate-900/60 rounded-lg border border-slate-700/30">
-                        <span id="timer" class="text-3xl font-mono font-bold text-white tracking-widest tabular-nums">00:00:00</span>
+                    <div id="timer-box" class="flex items-center justify-center py-2 bg-slate-900/50 rounded-lg border border-slate-700/30">
+                        <span id="timer" class="text-2xl font-mono font-bold text-white tabular-nums">00:00:00</span>
                     </div>
                 </div>
 
-                <!-- Audio Levels & Toggles -->
-                <div class="bg-slate-800/30 p-4 rounded-xl border border-slate-700/50 space-y-4">
-                    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-500">Уровни сигнала</h3>
-
-                    <!-- Mic -->
-                    <div class="flex items-center gap-3">
-                        <label class="toggle-switch flex-shrink-0">
-                            <input type="checkbox" id="toggle-mic" checked>
-                            <span class="slider"></span>
+                <!-- Input Monitor (What Transcription Hears) -->
+                <div class="bg-slate-800/30 p-4 rounded-xl border border-slate-700/50 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-500">Монитор входа (для AI)</h3>
+                        <label class="toggle">
+                            <input type="checkbox" id="toggle-monitor">
+                            <span class="toggle-track"></span>
                         </label>
-                        <div class="flex-1 space-y-1.5">
-                            <div class="flex justify-between text-xs">
-                                <span class="text-slate-300 flex items-center gap-2"><i class="fas fa-microphone-alt w-4 text-emerald-500/70"></i> Микрофон</span>
-                                <span id="lvl-mic" class="text-slate-500 font-mono">0%</span>
-                            </div>
-                            <div class="meter-container h-1.5 w-full rounded-full overflow-hidden">
-                                <div id="bar-mic" class="meter-fill h-full rounded-full" style="width: 0%"></div>
-                            </div>
-                        </div>
                     </div>
-
-                    <!-- Tab -->
-                    <div class="flex items-center gap-3">
-                        <label class="toggle-switch flex-shrink-0">
-                            <input type="checkbox" id="toggle-tab" class="tab" checked>
-                            <span class="slider"></span>
-                        </label>
-                        <div class="flex-1 space-y-1.5">
-                            <div class="flex justify-between text-xs">
-                                <span class="text-slate-300 flex items-center gap-2"><i class="fas fa-desktop w-4 text-blue-500/70"></i> Вкладка</span>
-                                <span id="lvl-tab" class="text-slate-500 font-mono">0%</span>
-                            </div>
-                            <div class="meter-container h-1.5 w-full rounded-full overflow-hidden">
-                                <div id="bar-tab" class="meter-fill tab h-full rounded-full" style="width: 0%"></div>
-                            </div>
-                        </div>
+                    <p class="text-[10px] text-slate-400">Включите, чтобы услышать через динамики то, что распознаёт AI. Уровень:</p>
+                    <div class="meter-bg h-2 w-full rounded-full overflow-hidden">
+                        <div id="bar-input" class="meter-fill h-full" style="width: 0%"></div>
+                    </div>
+                    <div class="flex justify-between text-[10px] text-slate-500">
+                        <span>Тихо</span>
+                        <span id="lvl-input" class="font-mono">0%</span>
+                        <span>Громко</span>
                     </div>
                 </div>
 
                 <!-- Export -->
-                <div id="export-ui" class="space-y-2 opacity-50 pointer-events-none transition-all duration-300">
+                <div id="export-panel" class="space-y-2 opacity-50 pointer-events-none transition-opacity">
                     <button id="dl-audio" class="w-full py-2.5 px-4 rounded-lg btn-secondary text-slate-300 text-sm flex items-center justify-center gap-2 border border-slate-600/30 hover:text-white">
-                        <i class="fas fa-file-audio"></i> Скачать аудио (.webm)
+                        <i class="fas fa-file-audio"></i> Скачать запись (.webm)
                     </button>
                     <button id="dl-text" class="w-full py-2.5 px-4 rounded-lg btn-secondary text-slate-300 text-sm flex items-center justify-center gap-2 border border-slate-600/30 hover:text-white">
                         <i class="fas fa-file-alt"></i> Скачать текст (.txt)
@@ -165,75 +118,66 @@
                 </div>
             </div>
 
-            <!-- RIGHT COLUMN: Transcript & Log -->
-            <div class="lg:col-span-8 flex flex-col gap-6 h-full">
+            <!-- RIGHT: Transcript & Log -->
+            <div class="lg:col-span-8 flex flex-col gap-5 h-full">
                 
-                <!-- Transcript Area -->
-                <div class="flex-1 glass-panel rounded-xl border border-slate-700/50 flex flex-col overflow-hidden bg-slate-900/40 min-h-[400px]">
+                <!-- Transcript -->
+                <div class="flex-1 glass rounded-xl border border-slate-700/50 flex flex-col overflow-hidden bg-slate-900/40 min-h-[400px]">
                     <div class="p-4 border-b border-slate-700/50 flex justify-between items-center bg-slate-800/30">
-                        <h3 class="text-sm font-semibold text-slate-300 flex items-center gap-2">
-                            <i class="fas fa-closed-captioning text-slate-500"></i> Транскрибация
-                        </h3>
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs text-slate-500">Статус:</span>
-                            <span id="speech-status" class="text-xs font-mono text-blue-400">Ожидание...</span>
-                        </div>
+                        <h3 class="text-sm font-semibold text-slate-300 flex items-center gap-2"><i class="fas fa-closed-captioning text-slate-500"></i> Транскрибация</h3>
+                        <span id="speech-state" class="text-xs px-2 py-0.5 rounded bg-slate-700/50 text-slate-400 border border-slate-600/30">Ожидание</span>
                     </div>
-                    <div id="transcript-area" class="flex-1 p-5 overflow-y-auto text-sm leading-7 space-y-3 font-sans text-slate-300">
-                        <div class="text-slate-500 italic text-center mt-12 select-none flex flex-col items-center gap-3">
-                            <i class="fas fa-comments text-3xl opacity-20"></i>
-                            <span>Текст появится здесь после начала записи...</span>
+                    <div id="transcript-area" class="flex-1 p-5 overflow-y-auto text-sm leading-7 space-y-2 font-sans text-slate-300">
+                        <div class="text-slate-500 italic text-center mt-10 select-none">
+                            <i class="fas fa-comments text-2xl mb-2 opacity-30 block"></i>
+                            Текст появится после старта...
                         </div>
                     </div>
                 </div>
 
-                <!-- System Log -->
-                <div class="h-40 glass-panel rounded-xl border border-slate-700/50 flex flex-col overflow-hidden bg-slate-900/20">
-                    <div class="p-3 border-b border-slate-700/50 bg-slate-800/30 flex justify-between items-center">
-                        <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-500">Журнал событий</h3>
-                        <button id="clear-log" class="text-[10px] text-slate-400 hover:text-white underline transition-colors">Очистить</button>
+                <!-- Log -->
+                <div class="h-36 glass rounded-xl border border-slate-700/50 flex flex-col overflow-hidden">
+                    <div class="p-2 border-b border-slate-700/50 bg-slate-800/30 flex justify-between items-center">
+                        <h3 class="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Журнал</h3>
+                        <button id="clear-log" class="text-[10px] text-slate-400 hover:text-white underline">Очистить</button>
                     </div>
-                    <div id="log-area" class="flex-1 p-3 overflow-y-auto font-mono text-[11px] space-y-1 text-slate-400 leading-relaxed">
-                        <!-- Logs injected here -->
-                    </div>
+                    <div id="log-area" class="flex-1 p-2 overflow-y-auto font-mono text-[10px] space-y-0.5 text-slate-400 bg-slate-900/20"></div>
                 </div>
             </div>
         </div>
     </main>
 
     <script>
-        // --- DOM Elements ---
+        // --- State & DOM ---
         const dom = {
-            btnConnect: document.getElementById('btn-connect'),
+            btnInit: document.getElementById('btn-init'),
             btnStart: document.getElementById('btn-start'),
             btnPause: document.getElementById('btn-pause'),
             btnStop: document.getElementById('btn-stop'),
+            btnGuide: document.getElementById('btn-guide'),
+            guidePanel: document.getElementById('guide-panel'),
+            btnCloseGuide: document.getElementById('btn-close-guide'),
+            toggleMonitor: document.getElementById('toggle-monitor'),
+            barInput: document.getElementById('bar-input'),
+            lvlInput: document.getElementById('lvl-input'),
             timer: document.getElementById('timer'),
-            timerDisplay: document.getElementById('timer-display'),
-            toggleMic: document.getElementById('toggle-mic'),
-            toggleTab: document.getElementById('toggle-tab'),
-            lvlMic: document.getElementById('lvl-mic'),
-            lvlTab: document.getElementById('lvl-tab'),
-            barMic: document.getElementById('bar-mic'),
-            barTab: document.getElementById('bar-tab'),
-            exportUI: document.getElementById('export-ui'),
+            timerBox: document.getElementById('timer-box'),
+            exportPanel: document.getElementById('export-panel'),
             dlAudio: document.getElementById('dl-audio'),
             dlText: document.getElementById('dl-text'),
             transcript: document.getElementById('transcript-area'),
-            phraseCounter: document.getElementById('phrase-counter'), // Note: ID missing in HTML, handled via JS selection
+            speechState: document.getElementById('speech-state'),
             logArea: document.getElementById('log-area'),
             clearLog: document.getElementById('clear-log'),
-            statusBadge: document.getElementById('status-badge'),
-            deviceSelect: document.getElementById('device-select'),
-            btnRefreshDev: document.getElementById('btn-refresh-devices'),
-            speechStatus: document.getElementById('speech-status')
+            statusBadge: document.getElementById('status-badge')
         };
 
-        // --- State ---
         const app = {
             ctx: null,
-            streams: { mic: null, tab: null },
-            nodes: { mic: null, tab: null, dest: null, micGain: null, tabGain: null, analyzers: { mic: null, tab: null } },
+            micStream: null,
+            tabStream: null,
+            mixedDest: null,
+            analyzers: { mic: null, tab: null, input: null },
             recorder: null,
             chunks: [],
             isRecording: false,
@@ -242,423 +186,210 @@
             elapsed: 0,
             timerID: null,
             recognition: null,
-            phraseCount: 0,
-            devices: []
+            monitorNode: null,
+            monitorStream: null
         };
 
-        // --- Logging ---
         const log = (msg, type = 'info') => {
             const t = new Date().toLocaleTimeString('ru-RU');
-            let color = 'text-slate-300';
-            if (type === 'error') color = 'text-red-400';
-            if (type === 'success') color = 'text-emerald-400';
-            if (type === 'warn') color = 'text-amber-400';
-            if (type === 'system') color = 'text-blue-400';
-            
-            dom.logArea.insertAdjacentHTML('beforeend', `<div><span class="opacity-40 select-none">[${t}]</span> <span class="${color}">${msg}</span></div>`);
+            const cls = { error:'text-red-400', success:'text-emerald-400', warn:'text-amber-400', sys:'text-blue-400' }[type] || 'text-slate-300';
+            dom.logArea.insertAdjacentHTML('beforeend', `<div><span class="opacity-40">[${t}]</span> <span class="${cls}">${msg}</span></div>`);
             dom.logArea.scrollTop = dom.logArea.scrollHeight;
         };
-
         dom.clearLog.onclick = () => dom.logArea.innerHTML = '';
 
-        // --- Device Enumeration ---
-        async function enumerateDevices() {
-            try {
-                // Need permission to see labels
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                stream.getTracks().forEach(track => track.stop()); // Stop immediately
-                
-                const devices = await navigator.mediaDevices.enumerateDevices();
-                app.devices = devices.filter(d => d.kind === 'audioinput');
-                
-                dom.deviceSelect.innerHTML = '';
-                
-                if (app.devices.length === 0) {
-                    dom.deviceSelect.innerHTML = '<option value="">Устройства не найдены</option>';
-                    return;
-                }
+        dom.btnGuide.onclick = () => dom.guidePanel.classList.remove('hidden');
+        dom.btnCloseGuide.onclick = () => dom.guidePanel.classList.add('hidden');
 
-                app.devices.forEach((device, index) => {
-                    const option = document.createElement('option');
-                    option.value = device.deviceId;
-                    option.textContent = device.label || `Микрофон ${index + 1}`;
-                    dom.deviceSelect.appendChild(option);
-                });
-                
-                log(`Найдено ${app.devices.length} аудио входов`, 'success');
-            } catch (err) {
-                log('Нет доступа к устройствам (разрешите микрофон)', 'error');
-                dom.deviceSelect.innerHTML = '<option value="">Нет доступа</option>';
-            }
-        }
-
-        dom.btnRefreshDev.onclick = () => {
-            enumerateDevices();
-        };
-
-        // --- Audio Initialization ---
+        // --- Audio Init ---
         async function initAudio() {
             try {
-                log('Запуск аудио-контекста...', 'system');
+                log('Инициализация AudioContext...', 'sys');
                 app.ctx = new (window.AudioContext || window.webkitAudioContext)();
                 if (app.ctx.state === 'suspended') await app.ctx.resume();
-                
-                // Microphone
-                log('Подключение микрофона...', 'system');
-                app.streams.mic = await navigator.mediaDevices.getUserMedia({ audio: true });
-                app.nodes.mic = app.ctx.createMediaStreamSource(app.streams.mic);
-                log('Микрофон активен', 'success');
 
-                // Tab (Display Media)
-                log('Запрос захвата вкладки...', 'system');
+                // 1. System Default Input (For Speech API)
+                log('Захват системного входа (для AI)...', 'sys');
+                app.micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false } });
+                app.analyzers.input = app.ctx.createAnalyser(); app.analyzers.input.fftSize = 256;
+                const micSource = app.ctx.createMediaStreamSource(app.micStream);
+                micSource.connect(app.analyzers.input);
+                log('Системный вход активен', 'success');
+
+                // 2. Tab Audio
+                log('Запрос захвата вкладки...', 'sys');
                 try {
-                    app.streams.tab = await navigator.mediaDevices.getDisplayMedia({ 
-                        video: true, // Required to trigger the dialog
-                        audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } 
-                    });
-                    
-                    if (app.streams.tab.getAudioTracks().length === 0) {
-                        throw new Error("Звук вкладки не выбран. Отметьте 'Поделиться звуком'");
-                    }
-                    
-                    app.streams.tab.getVideoTracks()[0].onended = () => {
-                        log('Захват экрана остановлен', 'warn');
-                        if (app.nodes.tabGain) app.nodes.tabGain.gain.value = 0;
-                        dom.toggleTab.checked = false;
-                    };
-                    app.nodes.tab = app.ctx.createMediaStreamSource(app.streams.tab);
-                    log('Звук вкладки активен', 'success');
-                } catch (e) {
-                    log(`Ошибка захвата: ${e.message}`, 'error');
+                    app.tabStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+                    app.tabStream.getVideoTracks()[0].onended = () => log('Захват вкладки завершён', 'warn');
+                    const tabSource = app.ctx.createMediaStreamSource(app.tabStream);
+                    app.analyzers.tab = app.ctx.createAnalyser(); app.analyzers.tab.fftSize = 256;
+                    tabSource.connect(app.analyzers.tab);
+                    log('Звук вкладки захвачен', 'success');
+                } catch(e) { log('Вкладка не подключена (необязательно)', 'warn'); }
+
+                // 3. Mix Destination (For Recording)
+                app.mixedDest = app.ctx.createMediaStreamDestination();
+                app.analyzers.mic = app.ctx.createAnalyser(); app.analyzers.mic.fftSize = 256;
+                micSource.connect(app.mixedDest);
+                micSource.connect(app.analyzers.mic);
+                if (app.tabStream) {
+                    const tabSrc = app.ctx.createMediaStreamSource(app.tabStream);
+                    tabSrc.connect(app.mixedDest);
                 }
 
-                // Graph Setup
-                app.nodes.dest = app.ctx.createMediaStreamDestination();
-                app.nodes.analyzers.mic = app.ctx.createAnalyser(); app.nodes.analyzers.mic.fftSize = 512;
-                app.nodes.analyzers.tab = app.ctx.createAnalyser(); app.nodes.analyzers.tab.fftSize = 512;
-                app.nodes.micGain = app.ctx.createGain();
-                app.nodes.tabGain = app.ctx.createGain();
-
-                // Routing
-                app.nodes.mic.connect(app.nodes.micGain);
-                app.nodes.micGain.connect(app.nodes.dest);
-                app.nodes.micGain.connect(app.nodes.analyzers.mic);
-
-                app.nodes.tab.connect(app.nodes.tabGain);
-                app.nodes.tabGain.connect(app.nodes.dest);
-                app.nodes.tabGain.connect(app.nodes.analyzers.tab);
-
-                // UI Update
-                dom.btnConnect.innerHTML = '<i class="fas fa-check"></i> Подключено';
-                dom.btnConnect.classList.add('bg-emerald-600/20', 'border-emerald-500/50', 'text-emerald-400', 'cursor-default');
-                dom.btnConnect.disabled = true;
-                
+                // UI Unlock
+                dom.btnInit.innerHTML = '<i class="fas fa-check"></i> Готово';
+                dom.btnInit.classList.add('bg-emerald-600/20', 'border-emerald-500/50', 'text-emerald-400');
+                dom.btnInit.disabled = true;
                 dom.btnStart.classList.remove('hidden');
                 dom.btnStart.disabled = false;
-                
                 updateStatus('Система готова', 'bg-emerald-500');
-                log('Аудио-маршрутизация завершена', 'success');
-                requestAnimationFrame(drawLevels);
-                
-                // Auto enumerate
-                enumerateDevices();
-
+                log('Маршрутизация завершена', 'success');
+                requestAnimationFrame(drawMeters);
             } catch (err) {
-                log(`Критическая ошибка: ${err.message}`, 'error');
+                log(`Ошибка инициализации: ${err.message}`, 'error');
             }
         }
+        dom.btnInit.onclick = () => { if (!app.ctx) initAudio(); };
 
-        dom.btnConnect.onclick = () => {
-            if (!app.ctx) initAudio();
+        // --- Monitor Toggle ---
+        dom.toggleMonitor.onchange = async (e) => {
+            if (!app.ctx) return log('Сначала нажмите "Инициализировать"', 'warn');
+            if (e.target.checked) {
+                try {
+                    const monitorDest = app.ctx.createMediaStreamDestination();
+                    app.analyzers.input.connect(monitorDest);
+                    const audio = new Audio();
+                    audio.srcObject = monitorDest.stream;
+                    audio.play();
+                    app.monitorStream = audio;
+                    log('Монитор входа включен (слышите AI)', 'sys');
+                } catch(err) { log('Не удалось включить монитор', 'error'); e.target.checked = false; }
+            } else {
+                if (app.monitorStream) { app.monitorStream.pause(); app.monitorStream.srcObject = null; }
+                log('Монитор выключен');
+            }
         };
 
-        // --- Toggles ---
-        dom.toggleMic.addEventListener('change', (e) => {
-            if (app.nodes.micGain) {
-                app.nodes.micGain.gain.setTargetAtTime(e.target.checked ? 1 : 0, app.ctx.currentTime, 0.05);
-                log(e.target.checked ? 'Микрофон включен' : 'Микрофон отключен');
-            }
-        });
-
-        dom.toggleTab.addEventListener('change', (e) => {
-            if (app.nodes.tabGain) {
-                app.nodes.tabGain.gain.setTargetAtTime(e.target.checked ? 1 : 0, app.ctx.currentTime, 0.05);
-                log(e.target.checked ? 'Звук вкладки включен' : 'Звук вкладки отключен');
-            }
-        });
-
-        // --- Visualizer ---
-        function drawLevels() {
-            if (!app.ctx) return;
-            
-            const getLevel = (analyser) => {
-                const bufferLength = analyser.frequencyBinCount;
-                const dataArray = new Uint8Array(bufferLength);
-                analyser.getByteFrequencyData(dataArray);
-                // Average volume
-                let sum = 0;
-                for(let i=0; i<bufferLength; i++) sum += dataArray[i];
-                return Math.min(100, Math.round((sum / bufferLength / 255) * 100 * 2.5)); // Boost sensitivity
+        // --- Meters ---
+        function drawMeters() {
+            const getLvl = (ana) => {
+                if (!ana) return 0;
+                const d = new Uint8Array(ana.frequencyBinCount);
+                ana.getByteFrequencyData(d);
+                const avg = d.reduce((a,b)=>a+b,0)/d.length;
+                return Math.min(100, Math.round((avg/255)*100*3));
             };
-
-            const m = getLevel(app.nodes.analyzers.mic);
-            const t = getLevel(app.nodes.analyzers.tab);
-
-            dom.lvlMic.textContent = `${m}%`;
-            dom.barMic.style.width = `${m}%`;
-            
-            dom.lvlTab.textContent = `${t}%`;
-            dom.barTab.style.width = `${t}%`;
-
-            requestAnimationFrame(drawLevels);
+            dom.barInput.style.width = `${getLvl(app.analyzers.input)}%`;
+            dom.lvlInput.textContent = `${getLvl(app.analyzers.input)}%`;
+            requestAnimationFrame(drawMeters);
         }
 
-        // --- Transport Controls ---
-        function startRecording() {
-            app.isRecording = true;
-            app.isPaused = false;
-            app.chunks = [];
-            app.startTime = Date.now();
-
+        // --- Transport ---
+        function startRec() {
+            app.isRecording = true; app.isPaused = false; app.chunks = []; app.startTime = Date.now();
             try {
-                app.recorder = new MediaRecorder(app.nodes.dest.stream, { 
-                    mimeType: MediaRecorder.isTypeSupported('audio/webm; codecs=opus') ? 'audio/webm; codecs=opus' : 'audio/webm' 
-                });
-            } catch(e) {
-                log(`Ошибка кодека: ${e.message}`, 'error');
-                stopRecording();
-                return;
-            }
+                app.recorder = new MediaRecorder(app.mixedDest.stream, { mimeType: 'audio/webm; codecs=opus' });
+                app.recorder.ondataavailable = e => { if (e.data.size>0) app.chunks.push(e.data); };
+                app.recorder.start(150);
+            } catch(e) { log(`Ошибка рекордера: ${e.message}`, 'error'); return; }
 
-            app.recorder.ondataavailable = (e) => {
-                if (e.data && e.data.size > 0) app.chunks.push(e.data);
-            };
-
-            app.recorder.start(200); // Collect data every 200ms
-
-            // UI State Update - FIX FOR BUG 1
-            // We explicitly show pause/stop and hide start, but DO NOT disable them
             dom.btnStart.classList.add('hidden');
-            dom.btnPause.classList.remove('hidden');
-            dom.btnPause.disabled = false;
-            dom.btnPause.innerHTML = '<i class="fas fa-pause"></i>';
-            
+            dom.btnPause.classList.remove('hidden'); dom.btnPause.innerHTML = '<i class="fas fa-pause"></i>';
             dom.btnStop.classList.remove('hidden');
-            dom.btnStop.disabled = false;
-
-            // Visuals
-            dom.timerDisplay.classList.remove('border-slate-700/30');
-            dom.timerDisplay.classList.add('border-red-500/40', 'bg-red-900/10');
-            
+            dom.timerBox.classList.add('border-red-500/50', 'bg-red-900/10');
             updateStatus('Запись', 'bg-red-500');
-            log('Запись началась', 'success');
-
-            // Timer
+            log('Запись запущена', 'success');
+            
             app.timerID = setInterval(() => {
-                const now = Date.now();
-                app.elapsed = now - app.startTime;
-                const h = Math.floor(app.elapsed / 3600000).toString().padStart(2,'0');
-                const m = Math.floor((app.elapsed % 3600000) / 60000).toString().padStart(2,'0');
-                const s = Math.floor((app.elapsed % 60000) / 1000).toString().padStart(2,'0');
+                app.elapsed = Date.now() - app.startTime;
+                const h = Math.floor(app.elapsed/36e5).toString().padStart(2,'0');
+                const m = Math.floor((app.elapsed%36e5)/6e4).toString().padStart(2,'0');
+                const s = Math.floor((app.elapsed%6e4)/1e3).toString().padStart(2,'0');
                 dom.timer.textContent = `${h}:${m}:${s}`;
-            }, 1000);
-
+            }, 500);
             startSpeech();
         }
 
         function togglePause() {
-            if (!app.isRecording) return;
-
+            if (!app.recorder) return;
+            app.isPaused = !app.isPaused;
             if (app.isPaused) {
-                // Resume
-                app.recorder.resume();
-                app.startTime = Date.now() - app.elapsed; // Adjust time
-                app.isPaused = false;
-                dom.btnPause.innerHTML = '<i class="fas fa-pause"></i>';
-                dom.timerDisplay.classList.remove('border-amber-500/40');
-                dom.timerDisplay.classList.add('border-red-500/40');
-                updateStatus('Запись', 'bg-red-500');
-                log('Запись продолжена');
-                startSpeech(); // Restart recognition
-            } else {
-                // Pause
-                app.recorder.pause();
-                app.isPaused = true;
+                app.recorder.pause(); clearInterval(app.timerID);
                 dom.btnPause.innerHTML = '<i class="fas fa-play"></i>';
-                dom.timerDisplay.classList.remove('border-red-500/40');
-                dom.timerDisplay.classList.add('border-amber-500/40');
+                dom.timerBox.classList.replace('border-red-500/50', 'border-amber-500/50');
                 updateStatus('Пауза', 'bg-amber-500');
-                log('Запись приостановлена');
                 stopSpeech();
+            } else {
+                app.recorder.resume(); app.startTime = Date.now() - app.elapsed;
+                dom.btnPause.innerHTML = '<i class="fas fa-pause"></i>';
+                dom.timerBox.classList.replace('border-amber-500/50', 'border-red-500/50');
+                updateStatus('Запись', 'bg-red-500');
+                startSpeech();
             }
         }
 
-        function stopRecording() {
-            app.isRecording = false;
-            app.isPaused = false;
-            clearInterval(app.timerID);
-            stopSpeech();
+        function stopRec() {
+            app.isRecording = false; app.isPaused = false;
+            clearInterval(app.timerID); stopSpeech();
+            if (app.recorder && app.recorder.state !== 'inactive') app.recorder.stop();
 
-            if (app.recorder && app.recorder.state !== 'inactive') {
-                app.recorder.stop();
-            }
-
-            // UI State Update
-            dom.btnPause.classList.add('hidden');
-            dom.btnStop.classList.add('hidden');
-            dom.btnStart.classList.remove('hidden');
-            dom.btnStart.disabled = false; // Re-enable Start button
-            
-            dom.timerDisplay.classList.remove('border-red-500/40', 'border-amber-500/40', 'bg-red-900/10');
-            dom.timerDisplay.classList.add('border-slate-700/30');
-
+            dom.btnPause.classList.add('hidden'); dom.btnStop.classList.add('hidden');
+            dom.btnStart.classList.remove('hidden'); dom.btnStart.disabled = false;
+            dom.timerBox.classList.remove('border-red-500/50', 'border-amber-500/50', 'bg-red-900/10');
             updateStatus('Система готова', 'bg-emerald-500');
             log('Запись остановлена', 'success');
 
-            // Prepare Export
             const blob = new Blob(app.chunks, { type: 'audio/webm' });
             const url = URL.createObjectURL(blob);
-            const fname = `record_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.webm`;
-            
             dom.dlAudio.onclick = () => {
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = fname;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                log('Аудиофайл сохранен');
+                const a = document.createElement('a'); a.href = url; a.download = `rec_${Date.now()}.webm`; a.click();
+                log('Файл сохранён');
             };
-            dom.exportUI.classList.remove('opacity-50', 'pointer-events-none');
+            dom.exportPanel.classList.remove('opacity-50', 'pointer-events-none');
         }
 
-        // --- Event Listeners for Transport ---
-        dom.btnStart.onclick = startRecording;
+        dom.btnStart.onclick = startRec;
         dom.btnPause.onclick = togglePause;
-        dom.btnStop.onclick = stopRecording;
+        dom.btnStop.onclick = stopRec;
 
-        // --- Speech Recognition ---
+        // --- Speech API ---
         function startSpeech() {
             const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SR) {
-                log('Web Speech API не поддерживается в этом браузере', 'warn');
-                dom.speechStatus.textContent = 'Не поддерживается';
-                dom.speechStatus.classList.replace('text-blue-400', 'text-red-400');
-                return;
-            }
-
+            if (!SR) { dom.speechState.textContent = 'API недоступен'; dom.speechState.className = 'text-xs px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30'; return; }
             app.recognition = new SR();
             app.recognition.lang = 'ru-RU';
-            app.recognition.continuous = true;
-            app.recognition.interimResults = true;
-            app.recognition.maxAlternatives = 1;
-
-            app.recognition.onstart = () => {
-                dom.speechStatus.textContent = 'Слушаю...';
-                dom.speechStatus.classList.remove('text-red-400');
-                dom.speechStatus.classList.add('text-blue-400');
+            app.recognition.continuous = true; app.recognition.interimResults = true;
+            app.recognition.onstart = () => { dom.speechState.textContent = 'Слушаю...'; dom.speechState.className = 'text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30'; };
+            app.recognition.onresult = e => {
+                let int='', fin='';
+                for(let i=e.resultIndex; i<e.results.length; i++) e.results[i].isFinal ? fin+=e.results[i][0].transcript : int+=e.results[i][0].transcript;
+                appendText(fin, true); appendText(int, false);
             };
+            app.recognition.onerror = e => { if(e.error!=='no-speech') log(`Speech: ${e.error}`, 'error'); };
+            app.recognition.onend = () => { if(app.isRecording && !app.isPaused) try{app.recognition.start();}catch(e){} else { dom.speechState.textContent = 'Остановлено'; } };
+            try { app.recognition.start(); } catch(e) { log('Не удалось запустить Speech API', 'error'); }
+        }
+        function stopSpeech() { if(app.recognition) try{app.recognition.stop();}catch(e){} }
 
-            app.recognition.onresult = (event) => {
-                let interimTranscript = '';
-                let finalTranscript = '';
-
-                for (let i = event.resultIndex; i < event.results.length; ++i) {
-                    if (event.results[i].isFinal) {
-                        finalTranscript += event.results[i][0].transcript;
-                        addTranscript(finalTranscript, true);
-                    } else {
-                        interimTranscript += event.results[i][0].transcript;
-                    }
-                }
-
-                if (interimTranscript) {
-                    addTranscript(interimTranscript, false);
-                }
-            };
-
-            app.recognition.onerror = (event) => {
-                if (event.error !== 'no-speech') {
-                    log(`Ошибка распознавания: ${event.error}`, 'error');
-                    dom.speechStatus.textContent = `Ошибка: ${event.error}`;
-                }
-            };
-
-            app.recognition.onend = () => {
-                // Auto restart if recording
-                if (app.isRecording && !app.isPaused) {
-                    try {
-                        app.recognition.start();
-                    } catch(e) {}
-                } else {
-                    dom.speechStatus.textContent = 'Остановлено';
-                }
-            };
-
-            try {
-                app.recognition.start();
-            } catch(e) {
-                log('Не удалось запустить распознавание', 'error');
-            }
+        function appendText(t, final) {
+            const old = dom.transcript.querySelector('.interim'); if(old) old.remove();
+            if(dom.transcript.querySelector('.text-center')) dom.transcript.innerHTML = '';
+            const el = document.createElement('div');
+            el.className = final ? 'p-2 bg-slate-800/40 rounded border-l-2 border-blue-500' : 'interim p-2 text-slate-400 italic opacity-70';
+            el.textContent = t; dom.transcript.appendChild(el); dom.transcript.scrollTop = dom.transcript.scrollHeight;
         }
 
-        function stopSpeech() {
-            if (app.recognition) {
-                try {
-                    app.recognition.stop();
-                } catch(e){}
-                app.recognition = null;
-            }
-        }
-
-        function addTranscript(text, isFinal) {
-            // Remove previous interim
-            const prevInterim = dom.transcript.querySelector('.interim-text');
-            if (prevInterim) prevInterim.remove();
-
-            // Remove placeholder
-            if (dom.transcript.querySelector('.text-center')) {
-                dom.transcript.innerHTML = '';
-            }
-
-            const div = document.createElement('div');
-            if (isFinal) {
-                div.className = 'p-3 bg-slate-800/40 rounded-lg border-l-4 border-blue-500 text-slate-200 shadow-sm';
-                div.textContent = text;
-            } else {
-                div.className = 'interim-text p-3 bg-slate-800/20 rounded-lg border-l-4 border-slate-600 text-slate-400 italic';
-                div.textContent = text;
-            }
-            dom.transcript.appendChild(div);
-            dom.transcript.scrollTop = dom.transcript.scrollHeight;
-        }
-
-        // --- Export Text ---
         dom.dlText.onclick = () => {
-            const text = dom.transcript.innerText;
-            if (!text) return;
-            const blob = new Blob([text], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `transcript_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.txt`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            log('Текст сохранен');
+            const t = dom.transcript.innerText; if(!t) return;
+            const b = new Blob([t], {type:'text/plain'}); const u = URL.createObjectURL(b);
+            const a = document.createElement('a'); a.href = u; a.download = `trans_${Date.now()}.txt`; a.click();
+            log('Текст сохранён');
         };
 
-        // --- Helpers ---
-        function updateStatus(text, colorClass) {
-            dom.statusBadge.innerHTML = `
-                <span class="relative flex h-2.5 w-2.5">
-                  <span class="${colorClass === 'bg-red-500' ? 'animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75' : ''}"></span>
-                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 ${colorClass}"></span>
-                </span>
-                ${text}
-            `;
+        function updateStatus(txt, cls) {
+            dom.statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full ${cls} ${cls.includes('red')?'pulse':''}"></span> ${txt}`;
         }
-
     </script>
 </body>
 </html>
