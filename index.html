@@ -6,44 +6,37 @@
     <title>Аудиорекордер | Запись звука</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #e2e8f0; }
-        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); }
-        .btn-primary { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); transition: all 0.2s; }
+        body { font-family: system-ui, -apple-system, sans-serif; background-color: #0b1120; color: #e2e8f0; }
+        .glass-panel { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(16px); border: 1px solid rgba(148, 163, 184, 0.1); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); }
+        .btn-primary { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); transition: all 0.2s ease; }
         .btn-primary:hover { background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%); transform: translateY(-1px); }
-        .btn-danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); transition: all 0.2s; }
-        .btn-danger:hover { background: linear-gradient(135deg, #f87171 0%, #ef4444 100%); transform: translateY(-1px); }
-        .btn-secondary { background: rgba(51, 65, 85, 0.8); transition: all 0.2s; }
-        .btn-secondary:hover { background: rgba(71, 85, 105, 0.9); }
-        .meter-fill { transition: width 0.1s linear; }
-        .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; }
-        .pulse { animation: pulse-animation 2s infinite; }
-        @keyframes pulse-animation { 0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1e293b; }
-        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        .btn-danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); transition: all 0.2s ease; }
+        .btn-danger:hover { background: linear-gradient(135deg, #f87171 0%, #ef4444 100%); }
+        .btn-secondary { background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(71, 85, 105, 0.5); transition: all 0.2s ease; }
+        .btn-secondary:hover { background: rgba(51, 65, 85, 0.9); border-color: rgba(100, 116, 139, 0.6); }
+        .source-btn { transition: all 0.2s ease; border: 1px solid transparent; }
+        .source-btn.active { background: rgba(59, 130, 246, 0.15); border-color: #3b82f6; color: #60a5fa; box-shadow: 0 0 12px rgba(59, 130, 246, 0.2); }
+        .meter-fill { transition: width 0.1s linear; background-size: 10px 10px; background-image: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%, transparent); background-size: 14px 14px; }
+        .pulse-dot { animation: pulse-glow 1.5s infinite; }
+        @keyframes pulse-glow { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4 selection:bg-blue-500 selection:text-white">
+<body class="min-h-screen flex items-center justify-center p-4 selection:bg-blue-500 selection:text-white">
 
-    <!-- Warning Banner -->
-    <div id="https-warning" class="hidden fixed top-0 left-0 right-0 bg-red-900/80 border-b border-red-700 text-red-100 px-4 py-3 z-50 flex items-center justify-between text-sm">
-        <div class="flex items-center gap-2">
-            <i class="fas fa-exclamation-triangle"></i>
-            <span>⚠️ Требуется безопасное соединение. Для работы с аудио-API необходим <code class="bg-red-800 px-1 rounded text-xs">HTTPS</code> или <code class="bg-red-800 px-1 rounded text-xs">http://localhost</code>.</span>
-        </div>
-        <div class="flex items-center gap-4">
-            <span class="text-xs opacity-75">Запустите сервер: <code class="bg-red-800 px-1 rounded">python -m http.server 8000</code></span>
-            <button onclick="window.location.reload()" class="text-red-200 hover:text-white font-medium text-xs underline">Проверить снова</button>
-        </div>
+    <!-- HTTPS Warning -->
+    <div id="security-banner" class="hidden fixed top-0 left-0 right-0 bg-red-900/90 border-b border-red-700 text-red-100 px-4 py-3 z-50 flex items-center justify-between text-sm">
+        <div class="flex items-center gap-2"><i class="fas fa-shield-alt"></i> <span>Требуется HTTPS. Запись невозможна в небезопасном контексте.</span></div>
+        <button onclick="location.reload()" class="underline hover:text-white">Обновить</button>
     </div>
 
-    <!-- Main App Container -->
-    <main class="w-full max-w-5xl glass-panel rounded-2xl overflow-hidden mt-8 relative">
+    <main class="w-full max-w-6xl glass-panel rounded-2xl overflow-hidden mt-6 relative">
         <!-- Header -->
-        <header class="p-6 border-b border-slate-700/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gradient-to-r from-slate-800/50 to-slate-900/50">
+        <header class="p-6 border-b border-slate-700/40 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gradient-to-r from-slate-800/40 to-transparent">
             <div>
                 <h1 class="text-2xl font-bold text-white flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-blue-600/20 flex items-center justify-center text-blue-400 border border-blue-500/30">
@@ -51,474 +44,424 @@
                     </div>
                     Аудиорекордер
                 </h1>
-                <p class="text-slate-400 text-sm mt-1 ml-[52px]">Запись звука с вкладки и микрофона • Транскрибация</p>
+                <p class="text-slate-400 text-sm mt-1 ml-[52px]">Динамическое переключение источников • Транскрибация • Экспорт</p>
             </div>
-            
-            <div id="connection-status" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-xs font-medium text-slate-400">
-                <span class="status-dot bg-slate-500"></span>
-                Источники не подключены
+            <div id="status-indicator" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/60 border border-slate-700 text-xs font-medium text-slate-400">
+                <span class="w-2 h-2 rounded-full bg-slate-500"></span> Ожидание подключения
             </div>
         </header>
 
-        <div class="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
             
-            <!-- Left Column: Controls & Levels -->
-            <div class="lg:col-span-1 space-y-6">
+            <!-- Controls Column -->
+            <div class="lg:col-span-4 space-y-6">
                 
+                <!-- Source Selector -->
+                <div class="bg-slate-800/30 p-4 rounded-xl border border-slate-700/40">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-500">Активный источник</h3>
+                        <span id="current-source-label" class="text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">Смешанный</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button id="src-mic" class="source-btn active py-2.5 px-2 rounded-lg flex flex-col items-center justify-center gap-1 text-sm bg-slate-800/50 text-slate-300" data-type="mic">
+                            <i class="fas fa-microphone text-lg"></i> Микрофон
+                        </button>
+                        <button id="src-tab" class="source-btn py-2.5 px-2 rounded-lg flex flex-col items-center justify-center gap-1 text-sm bg-slate-800/50 text-slate-300" data-type="tab">
+                            <i class="fas fa-desktop text-lg"></i> Вкладка
+                        </button>
+                        <button id="src-mixed" class="source-btn py-2.5 px-2 rounded-lg flex flex-col items-center justify-center gap-1 text-sm bg-slate-800/50 text-slate-300" data-type="mixed">
+                            <i class="fas fa-layer-group text-lg"></i> Оба
+                        </button>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-2 leading-tight">Переключение работает в реальном времени, даже во время записи.</p>
+                </div>
+
                 <!-- Transport Controls -->
                 <div class="space-y-4">
-                    <button id="btn-connect" class="w-full py-3 px-4 rounded-xl btn-secondary text-slate-200 font-medium flex items-center justify-center gap-2 border border-slate-600/50">
+                    <button id="btn-init" class="w-full py-3 px-4 rounded-xl btn-secondary text-slate-200 font-medium flex items-center justify-center gap-2">
                         <i class="fas fa-plug"></i> Подключить источники
                     </button>
 
-                    <div id="transport-controls" class="grid grid-cols-2 gap-3 opacity-50 pointer-events-none transition-opacity duration-300">
-                        <button id="btn-start" class="py-3 px-4 rounded-xl btn-primary text-white font-medium flex items-center justify-center gap-2 shadow-lg shadow-blue-900/20">
-                            <i class="fas fa-circle text-xs"></i> Начать
+                    <div id="transport-ui" class="grid grid-cols-2 gap-3 opacity-50 pointer-events-none transition-all duration-300">
+                        <button id="btn-start" class="col-span-2 py-3 px-4 rounded-xl btn-primary text-white font-medium flex items-center justify-center gap-2 shadow-lg shadow-blue-900/30">
+                            <i class="fas fa-circle text-[10px]"></i> Начать запись
                         </button>
-                        <button id="btn-pause" class="py-3 px-4 rounded-xl btn-secondary text-yellow-400 font-medium flex items-center justify-center gap-2 border border-slate-600/50 hidden">
+                        <button id="btn-pause" class="hidden py-3 px-4 rounded-xl btn-secondary text-yellow-400 font-medium flex items-center justify-center gap-2 border border-slate-600/40">
                             <i class="fas fa-pause"></i> Пауза
                         </button>
-                        <button id="btn-stop" class="py-3 px-4 rounded-xl btn-danger text-white font-medium flex items-center justify-center gap-2 shadow-lg shadow-red-900/20 hidden">
-                            <i class="fas fa-square text-xs"></i> Остановить
+                        <button id="btn-stop" class="hidden py-3 px-4 rounded-xl btn-danger text-white font-medium flex items-center justify-center gap-2 shadow-lg shadow-red-900/30">
+                            <i class="fas fa-stop text-[10px]"></i> Остановить
                         </button>
-                        <div class="col-span-2 text-center py-2 bg-slate-800/50 rounded-lg border border-slate-700/50">
-                            <span id="timer" class="text-2xl font-mono font-bold text-white tracking-wider">00:00</span>
+                        <div class="col-span-2 flex items-center justify-center py-3 bg-slate-900/50 rounded-lg border border-slate-700/30">
+                            <span id="timer" class="text-3xl font-mono font-bold text-white tracking-widest tabular-nums">00:00:00</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Audio Levels -->
-                <div class="space-y-4 bg-slate-800/30 p-4 rounded-xl border border-slate-700/50">
+                <!-- Levels -->
+                <div class="bg-slate-800/30 p-4 rounded-xl border border-slate-700/40 space-y-3">
                     <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-500">Уровни сигнала</h3>
-                    
-                    <!-- Mic Level -->
-                    <div>
-                        <div class="flex justify-between text-xs mb-1.5">
-                            <span class="text-slate-400 flex items-center gap-2"><i class="fas fa-microphone text-slate-500"></i> Микрофон</span>
-                            <span id="mic-percent" class="text-slate-500 font-mono">0%</span>
-                        </div>
-                        <div class="h-2 w-full bg-slate-700 rounded-full overflow-hidden">
-                            <div id="mic-bar" class="h-full bg-emerald-500 meter-fill" style="width: 0%"></div>
-                        </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs mb-1"><span class="text-slate-400 flex items-center gap-2"><i class="fas fa-microphone-alt text-slate-500 w-4"></i> Микрофон</span><span id="lvl-mic" class="text-slate-500 font-mono w-8 text-right">0%</span></div>
+                        <div class="h-1.5 w-full bg-slate-700/50 rounded-full overflow-hidden"><div id="bar-mic" class="h-full bg-emerald-500 meter-fill" style="width: 0%"></div></div>
                     </div>
-
-                    <!-- Tab Level -->
-                    <div>
-                        <div class="flex justify-between text-xs mb-1.5">
-                            <span class="text-slate-400 flex items-center gap-2"><i class="fas fa-desktop text-slate-500"></i> Вкладка</span>
-                            <span id="tab-percent" class="text-slate-500 font-mono">0%</span>
-                        </div>
-                        <div class="h-2 w-full bg-slate-700 rounded-full overflow-hidden">
-                            <div id="tab-bar" class="h-full bg-blue-500 meter-fill" style="width: 0%"></div>
-                        </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs mb-1"><span class="text-slate-400 flex items-center gap-2"><i class="fas fa-desktop text-slate-500 w-4"></i> Вкладка</span><span id="lvl-tab" class="text-slate-500 font-mono w-8 text-right">0%</span></div>
+                        <div class="h-1.5 w-full bg-slate-700/50 rounded-full overflow-hidden"><div id="bar-tab" class="h-full bg-blue-500 meter-fill" style="width: 0%"></div></div>
                     </div>
                 </div>
 
                 <!-- Export -->
-                <div id="export-panel" class="space-y-3 opacity-50 pointer-events-none transition-opacity duration-300">
-                    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-500">Экспорт</h3>
+                <div id="export-ui" class="space-y-2 opacity-50 pointer-events-none transition-all duration-300">
                     <button id="dl-audio" class="w-full py-2.5 px-4 rounded-lg btn-secondary text-slate-300 text-sm flex items-center justify-center gap-2 border border-slate-600/30 hover:text-white">
-                        <i class="fas fa-file-audio"></i> Скачать аудио
+                        <i class="fas fa-file-audio"></i> Скачать аудио (.webm)
                     </button>
                     <button id="dl-text" class="w-full py-2.5 px-4 rounded-lg btn-secondary text-slate-300 text-sm flex items-center justify-center gap-2 border border-slate-600/30 hover:text-white">
-                        <i class="fas fa-file-alt"></i> Скачать текст
+                        <i class="fas fa-file-alt"></i> Скачать текст (.txt)
                     </button>
                 </div>
             </div>
 
             <!-- Right Column: Transcript & Log -->
-            <div class="lg:col-span-2 flex flex-col gap-6 h-full">
+            <div class="lg:col-span-8 flex flex-col gap-6 h-full">
                 
-                <!-- Transcript Area -->
-                <div class="flex-1 glass-panel rounded-xl border border-slate-700/50 flex flex-col overflow-hidden bg-slate-900/50">
-                    <div class="p-4 border-b border-slate-700/50 flex justify-between items-center bg-slate-800/30">
-                        <h3 class="text-sm font-semibold text-slate-300 flex items-center gap-2">
-                            <i class="fas fa-align-left text-slate-500"></i> Транскрибация
-                        </h3>
-                        <span id="phrase-count" class="text-xs px-2 py-0.5 rounded-full bg-slate-700 text-slate-400">0 фраз</span>
+                <!-- Transcript -->
+                <div class="flex-1 glass-panel rounded-xl border border-slate-700/40 flex flex-col overflow-hidden bg-slate-900/40 min-h-[350px]">
+                    <div class="p-4 border-b border-slate-700/40 flex justify-between items-center bg-slate-800/20">
+                        <h3 class="text-sm font-semibold text-slate-300 flex items-center gap-2"><i class="fas fa-closed-captioning text-slate-500"></i> Транскрибация</h3>
+                        <span id="phrase-counter" class="text-xs px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-400 border border-slate-600/30">0 фраз</span>
                     </div>
-                    <div id="transcript-box" class="flex-1 p-4 overflow-y-auto text-sm leading-relaxed space-y-2 min-h-[300px] text-slate-300">
-                        <div class="text-slate-500 italic text-center mt-10">Ожидание речи...</div>
+                    <div id="transcript-area" class="flex-1 p-4 overflow-y-auto text-sm leading-relaxed space-y-2 font-sans">
+                        <div class="text-slate-500 italic text-center mt-8 select-none">Текст появится здесь после начала записи...</div>
                     </div>
                 </div>
 
-                <!-- Status Log -->
-                <div class="h-48 glass-panel rounded-xl border border-slate-700/50 flex flex-col overflow-hidden">
-                    <div class="p-3 border-b border-slate-700/50 bg-slate-800/30">
+                <!-- Log -->
+                <div class="h-48 glass-panel rounded-xl border border-slate-700/40 flex flex-col overflow-hidden">
+                    <div class="p-3 border-b border-slate-700/40 bg-slate-800/20 flex justify-between items-center">
                         <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-500">Журнал событий</h3>
+                        <button id="clear-log" class="text-[10px] text-slate-400 hover:text-white underline">Очистить</button>
                     </div>
-                    <div id="log-box" class="flex-1 p-3 overflow-y-auto font-mono text-xs space-y-1 text-slate-400 bg-slate-900/30">
-                        <!-- Logs go here -->
-                    </div>
+                    <div id="log-area" class="flex-1 p-3 overflow-y-auto font-mono text-[11px] space-y-1.5 text-slate-400 bg-slate-900/20"></div>
                 </div>
 
-                <!-- Footer Info -->
-                <div class="flex justify-between items-center text-xs text-slate-500">
-                    <div class="flex items-center gap-3">
-                        <span>Chrome</span>
-                        <span class="w-1 h-1 bg-slate-600 rounded-full"></span>
-                        <span>Edge</span>
-                        <span class="w-1 h-1 bg-slate-600 rounded-full"></span>
-                        <span>Яндекс.Браузер</span>
-                    </div>
-                    <a href="#" class="hover:text-blue-400 transition-colors flex items-center gap-1">
-                        <i class="fas fa-question-circle"></i> Как запустить?
-                    </a>
+                <div class="flex justify-between items-center text-xs text-slate-600 pt-2">
+                    <span>Поддерживается: Chrome 110+ • Edge • Яндекс</span>
+                    <span>API: Web Audio • MediaRecorder • Web Speech</span>
                 </div>
             </div>
         </div>
     </main>
 
     <script>
-        // --- Security Check ---
-        const isSecure = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-        if (!isSecure) {
-            document.getElementById('https-warning').classList.remove('hidden');
-        }
+        const isSecure = location.protocol === 'https:' || ['localhost', '127.0.0.1'].includes(location.hostname);
+        if (!isSecure) document.getElementById('security-banner').classList.remove('hidden');
 
-        // --- App State ---
-        const state = {
-            audioCtx: null,
-            micStream: null,
-            tabStream: null,
-            mixedStream: null,
-            mediaRecorder: null,
-            recordedChunks: [],
-            recognition: null,
-            isRecording: false,
-            startTime: 0,
-            elapsed: 0,
-            timerInterval: null,
-            phraseCount: 0,
-            sourcesConnected: false
-        };
-
-        // --- UI Elements ---
-        const els = {
-            btnConnect: document.getElementById('btn-connect'),
-            transportControls: document.getElementById('transport-controls'),
+        const dom = {
+            btnInit: document.getElementById('btn-init'),
+            transportUI: document.getElementById('transport-ui'),
             btnStart: document.getElementById('btn-start'),
             btnPause: document.getElementById('btn-pause'),
             btnStop: document.getElementById('btn-stop'),
             timer: document.getElementById('timer'),
-            micBar: document.getElementById('mic-bar'),
-            tabBar: document.getElementById('tab-bar'),
-            micPercent: document.getElementById('mic-percent'),
-            tabPercent: document.getElementById('tab-percent'),
-            exportPanel: document.getElementById('export-panel'),
+            srcBtns: document.querySelectorAll('.source-btn'),
+            srcLabel: document.getElementById('current-source-label'),
+            lvlMic: document.getElementById('lvl-mic'),
+            lvlTab: document.getElementById('lvl-tab'),
+            barMic: document.getElementById('bar-mic'),
+            barTab: document.getElementById('bar-tab'),
+            exportUI: document.getElementById('export-ui'),
             dlAudio: document.getElementById('dl-audio'),
             dlText: document.getElementById('dl-text'),
-            transcriptBox: document.getElementById('transcript-box'),
-            phraseCount: document.getElementById('phrase-count'),
-            logBox: document.getElementById('log-box'),
-            connStatus: document.getElementById('connection-status')
+            transcript: document.getElementById('transcript-area'),
+            phraseCounter: document.getElementById('phrase-counter'),
+            logArea: document.getElementById('log-area'),
+            clearLog: document.getElementById('clear-log'),
+            status: document.getElementById('status-indicator')
         };
 
-        // --- Logger ---
-        function log(msg, type = 'info') {
-            const time = new Date().toLocaleTimeString();
-            const div = document.createElement('div');
-            div.innerHTML = `<span class="opacity-50">[${time}]</span> <span class="${type === 'error' ? 'text-red-400' : type === 'success' ? 'text-emerald-400' : 'text-slate-300'}">${msg}</span>`;
-            els.logBox.appendChild(div);
-            els.logBox.scrollTop = els.logBox.scrollHeight;
-        }
+        const app = {
+            ctx: null,
+            streams: { mic: null, tab: null },
+            nodes: { mic: null, tab: null, dest: null, analyzers: { mic: null, tab: null } },
+            activeSource: 'mixed',
+            recorder: null,
+            chunks: [],
+            isRecording: false,
+            isPaused: false,
+            startTime: 0,
+            elapsed: 0,
+            timerID: null,
+            recognition: null,
+            phraseCount: 0
+        };
 
-        // --- Audio Analysis (Visualizer) ---
-        let micAnalyzer, tabAnalyzer;
-        function setupAnalyzers() {
-            micAnalyzer = state.audioCtx.createAnalyser();
-            micAnalyzer.fftSize = 256;
-            tabAnalyzer = state.audioCtx.createAnalyser();
-            tabAnalyzer.fftSize = 256;
-            updateLevels();
-        }
+        const log = (msg, type = 'info') => {
+            const t = new Date().toLocaleTimeString('ru-RU');
+            const cls = type === 'error' ? 'text-red-400' : type === 'success' ? 'text-emerald-400' : type === 'warn' ? 'text-amber-400' : 'text-slate-300';
+            dom.logArea.insertAdjacentHTML('beforeend', `<div><span class="opacity-40">[${t}]</span> <span class="${cls}">${msg}</span></div>`);
+            dom.logArea.scrollTop = dom.logArea.scrollHeight;
+        };
+        dom.clearLog.onclick = () => dom.logArea.innerHTML = '';
 
-        function updateLevels() {
-            if (!state.micStream || !state.tabStream) return;
-            
-            const micData = new Uint8Array(micAnalyzer.frequencyBinCount);
-            micAnalyzer.getByteFrequencyData(micData);
-            const micAvg = Array.from(micData).reduce((a, b) => a + b, 0) / micData.length;
-            const micLevel = Math.min(100, Math.round((micAvg / 128) * 100));
-            
-            const tabData = new Uint8Array(tabAnalyzer.frequencyBinCount);
-            tabAnalyzer.getByteFrequencyData(tabData);
-            const tabAvg = Array.from(tabData).reduce((a, b) => a + b, 0) / tabData.length;
-            const tabLevel = Math.min(100, Math.round((tabAvg / 128) * 100));
-
-            els.micBar.style.width = `${micLevel}%`;
-            els.micPercent.innerText = `${micLevel}%`;
-            els.tabBar.style.width = `${tabLevel}%`;
-            els.tabPercent.innerText = `${tabLevel}%`;
-
-            requestAnimationFrame(updateLevels);
-        }
-
-        // --- Connect Sources ---
-        async function connectSources() {
-            log('Подключение источников...');
+        // --- Audio Setup ---
+        async function initAudio() {
             try {
+                log('Инициализация аудио-системы...');
+                app.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                
                 // 1. Microphone
-                state.micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                app.streams.mic = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+                app.nodes.mic = app.ctx.createMediaStreamSource(app.streams.mic);
                 log('Микрофон подключен', 'success');
 
-                // 2. Tab Audio (Display Media)
-                // Note: In Chrome, user MUST check "Share system audio" or "Share tab audio"
-                const displayConstraints = { 
-                    video: { width: { ideal: 1 } }, // Request minimal video just to get the stream
-                    audio: true 
+                // 2. Tab
+                app.streams.tab = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+                // Handle tab stream stop
+                app.streams.tab.getVideoTracks()[0].onended = () => {
+                    log('Захват вкладки остановлен пользователем', 'warn');
+                    disconnectAll();
                 };
-                state.tabStream = await navigator.mediaDevices.getDisplayMedia(displayConstraints);
+                app.nodes.tab = app.ctx.createMediaStreamSource(app.streams.tab);
+                log('Вкладка подключена', 'success');
+
+                // 3. Destination & Analyzers
+                app.nodes.dest = app.ctx.createMediaStreamDestination();
+                app.nodes.analyzers.mic = app.ctx.createAnalyser();
+                app.nodes.analyzers.mic.fftSize = 256;
+                app.nodes.analyzers.tab = app.ctx.createAnalyser();
+                app.nodes.analyzers.tab.fftSize = 256;
+
+                // Route initial
+                applyRouting();
                 
-                // If user selected "Screen" instead of "Tab", audio might be empty or require specific OS settings.
-                // We check for audio tracks.
-                const audioTracks = state.tabStream.getAudioTracks();
-                if (audioTracks.length === 0) {
-                    log('ВНИМАНИЕ: Звук вкладки не выбран. Убедитесь, что включена опция "Поделиться звуком вкладки".', 'error');
-                } else {
-                    log('Вкладка подключена', 'success');
-                }
+                // UI Unlock
+                dom.btnInit.disabled = true;
+                dom.btnInit.innerHTML = '<i class="fas fa-check"></i> Подключено';
+                dom.btnInit.classList.add('opacity-70', 'cursor-not-allowed');
+                dom.transportUI.classList.remove('opacity-50', 'pointer-events-none');
+                updateStatus('Готово к записи', 'bg-emerald-500');
+                log('Аудио-граф собран', 'success');
 
-                // 3. Mix Streams
-                state.audioCtx = new AudioContext();
-                setupAnalyzers();
-
-                const dest = state.audioCtx.createMediaStreamDestination();
+                // Start visualizer loop
+                requestAnimationFrame(drawLevels);
                 
-                // Connect Mic
-                const micSource = state.audioCtx.createMediaStreamSource(state.micStream);
-                micSource.connect(dest);
-                micSource.connect(micAnalyzer);
-
-                // Connect Tab
-                const tabSource = state.audioCtx.createMediaStreamSource(state.tabStream);
-                tabSource.connect(dest);
-                tabSource.connect(tabAnalyzer);
-
-                state.mixedStream = dest.stream;
-
-                // UI Update
-                state.sourcesConnected = true;
-                els.connStatus.innerHTML = `<span class="status-dot bg-emerald-500 pulse"></span> Источники подключены`;
-                els.connStatus.classList.add('text-emerald-400', 'bg-emerald-900/20', 'border-emerald-700/50');
-                els.btnConnect.disabled = true;
-                els.btnConnect.classList.add('opacity-50', 'cursor-not-allowed');
-                els.transportControls.classList.remove('opacity-50', 'pointer-events-none');
-                
-                log('Аудио-потоки смешаны', 'success');
-
             } catch (err) {
-                log(`Ошибка подключения: ${err.message}`, 'error');
+                log(`Ошибка: ${err.message}`, 'error');
                 console.error(err);
             }
         }
 
-        // --- Recording Logic ---
-        function startRecording() {
-            if (!state.sourcesConnected) return;
+        function applyRouting() {
+            if (!app.ctx || app.ctx.state === 'closed') return;
+            
+            // Safe disconnect
+            try { app.nodes.mic.disconnect(); } catch(e){}
+            try { app.nodes.tab.disconnect(); } catch(e){}
 
-            state.recordedChunks = [];
-            state.isRecording = true;
-            state.startTime = Date.now() - state.elapsed;
+            const dest = app.nodes.dest;
+            const micAna = app.nodes.analyzers.mic;
+            const tabAna = app.nodes.analyzers.tab;
 
-            // Setup Recorder with Mixed Stream
-            const options = { mimeType: 'audio/webm' };
-            try {
-                state.mediaRecorder = new MediaRecorder(state.mixedStream, options);
-            } catch (e) {
-                log('Ошибка инициализации рекордера. Возможно, кодек не поддерживается.', 'error');
-                return;
+            if (app.activeSource === 'mic' || app.activeSource === 'mixed') {
+                app.nodes.mic.connect(dest);
+                app.nodes.mic.connect(micAna);
             }
+            if (app.activeSource === 'tab' || app.activeSource === 'mixed') {
+                app.nodes.tab.connect(dest);
+                app.nodes.tab.connect(tabAna);
+            }
+            log(`Источник изменен: ${app.activeSource === 'mic' ? 'Микрофон' : app.activeSource === 'tab' ? 'Вкладка' : 'Смешанный'}`);
+        }
 
-            state.mediaRecorder.ondataavailable = (e) => {
-                if (e.data.size > 0) state.recordedChunks.push(e.data);
+        function setSource(type) {
+            if (!app.ctx || app.ctx.state !== 'running') return;
+            app.activeSource = type;
+            
+            // UI Update
+            dom.srcBtns.forEach(b => b.classList.toggle('active', b.dataset.type === type));
+            const labels = { mic: 'Микрофон', tab: 'Вкладка', mixed: 'Оба' };
+            dom.srcLabel.textContent = labels[type];
+            
+            applyRouting();
+        }
+
+        dom.srcBtns.forEach(b => b.addEventListener('click', () => setSource(b.dataset.type)));
+
+        // --- Levels Visualization ---
+        function drawLevels() {
+            if (!app.ctx) return;
+            
+            const getLevel = (ana) => {
+                const d = new Uint8Array(ana.frequencyBinCount);
+                ana.getByteFrequencyData(d);
+                return Math.min(100, Math.round((d.reduce((a,b)=>a+b,0)/d.length / 128) * 100));
             };
 
-            state.mediaRecorder.start(100); // Collect data every 100ms
+            const m = getLevel(app.nodes.analyzers.mic);
+            const t = getLevel(app.nodes.analyzers.tab);
 
-            // UI
-            els.btnStart.classList.add('hidden');
-            els.btnPause.classList.remove('hidden');
-            els.btnStop.classList.remove('hidden');
-            els.btnPause.innerHTML = '<i class="fas fa-pause"></i> Пауза';
-            els.btnPause.classList.remove('bg-yellow-900/20', 'text-yellow-400');
+            dom.lvlMic.textContent = `${m}%`;
+            dom.barMic.style.width = `${m}%`;
+            dom.lvlTab.textContent = `${t}%`;
+            dom.barTab.style.width = `${t}%`;
+
+            requestAnimationFrame(drawLevels);
+        }
+
+        // --- Transport ---
+        function startRec() {
+            app.isRecording = true;
+            app.isPaused = false;
+            app.chunks = [];
+            app.startTime = Date.now() - app.elapsed;
+
+            app.recorder = new MediaRecorder(app.nodes.dest.stream, { mimeType: 'audio/webm; codecs=opus' });
+            app.recorder.ondataavailable = e => { if (e.data.size > 0) app.chunks.push(e.data); };
+            app.recorder.start(100);
+
+            dom.btnStart.classList.add('hidden');
+            dom.btnPause.classList.remove('hidden');
+            dom.btnStop.classList.remove('hidden');
+            dom.transportUI.classList.add('opacity-50', 'pointer-events-none');
+            dom.timer.parentElement.classList.replace('bg-slate-900/50', 'bg-red-900/30');
+            dom.timer.parentElement.classList.add('border-red-800/40');
             
+            updateStatus('Идет запись', 'bg-red-500 pulse-dot');
+            log('Запись запущена', 'success');
+
             // Timer
-            state.timerInterval = setInterval(() => {
-                state.elapsed = Date.now() - state.startTime;
-                const secs = Math.floor(state.elapsed / 1000);
-                const mins = Math.floor(secs / 60);
-                const remSecs = secs % 60;
-                els.timer.innerText = `${mins.toString().padStart(2, '0')}:${remSecs.toString().padStart(2, '0')}`;
+            app.timerID = setInterval(() => {
+                app.elapsed = Date.now() - app.startTime;
+                const h = Math.floor(app.elapsed / 3600000).toString().padStart(2,'0');
+                const m = Math.floor((app.elapsed % 3600000) / 60000).toString().padStart(2,'0');
+                const s = Math.floor((app.elapsed % 60000) / 1000).toString().padStart(2,'0');
+                dom.timer.textContent = `${h}:${m}:${s}`;
             }, 1000);
 
-            // Start Transcription
-            startTranscription();
-            
-            log('Запись начата', 'success');
+            startSpeech();
         }
 
-        function pauseRecording() {
-            if (!state.isRecording) return;
+        function togglePause() {
+            if (!app.recorder) return;
+            app.isPaused = !app.isPaused;
             
-            if (state.mediaRecorder.state === 'recording') {
-                state.mediaRecorder.pause();
-                clearInterval(state.timerInterval);
-                els.btnPause.innerHTML = '<i class="fas fa-play"></i> Продолжить';
-                els.btnPause.classList.add('bg-yellow-900/20', 'text-yellow-400');
-                log('Запись приостановлена');
+            if (app.isPaused) {
+                app.recorder.pause();
+                clearInterval(app.timerID);
+                dom.btnPause.innerHTML = '<i class="fas fa-play"></i> Продолжить';
+                dom.timer.parentElement.classList.remove('border-red-800/40', 'bg-red-900/30');
+                dom.timer.parentElement.classList.add('bg-yellow-900/30', 'border-yellow-700/40');
+                updateStatus('Пауза', 'bg-amber-500 pulse-dot');
             } else {
-                state.mediaRecorder.resume();
-                state.startTime = Date.now() - state.elapsed; // Adjust start time
-                state.timerInterval = setInterval(() => { /* ... same as above ... */
-                    state.elapsed = Date.now() - state.startTime;
-                    const secs = Math.floor(state.elapsed / 1000);
-                    const mins = Math.floor(secs / 60);
-                    const remSecs = secs % 60;
-                    els.timer.innerText = `${mins.toString().padStart(2, '0')}:${remSecs.toString().padStart(2, '0')}`;
+                app.recorder.resume();
+                app.startTime = Date.now() - app.elapsed;
+                app.timerID = setInterval(() => { /* ... timer logic duplicated for brevity in pause/resume context */ 
+                    app.elapsed = Date.now() - app.startTime;
+                    const h = Math.floor(app.elapsed / 3600000).toString().padStart(2,'0');
+                    const m = Math.floor((app.elapsed % 3600000) / 60000).toString().padStart(2,'0');
+                    const s = Math.floor((app.elapsed % 60000) / 1000).toString().padStart(2,'0');
+                    dom.timer.textContent = `${h}:${m}:${s}`;
                 }, 1000);
-                els.btnPause.innerHTML = '<i class="fas fa-pause"></i> Пауза';
-                els.btnPause.classList.remove('bg-yellow-900/20', 'text-yellow-400');
-                log('Запись продолжена');
+                dom.btnPause.innerHTML = '<i class="fas fa-pause"></i> Пауза';
+                dom.timer.parentElement.classList.replace('bg-yellow-900/30', 'bg-red-900/30');
+                dom.timer.parentElement.classList.replace('border-yellow-700/40', 'border-red-800/40');
+                updateStatus('Идет запись', 'bg-red-500 pulse-dot');
             }
         }
 
-        function stopRecording() {
-            state.isRecording = false;
-            clearInterval(state.timerInterval);
+        function stopRec() {
+            app.isRecording = false;
+            app.isPaused = false;
+            clearInterval(app.timerID);
+            if (app.recorder) app.recorder.stop();
+            stopSpeech();
+
+            dom.btnStart.classList.remove('hidden');
+            dom.btnPause.classList.add('hidden');
+            dom.btnStop.classList.add('hidden');
+            dom.transportUI.classList.remove('opacity-50', 'pointer-events-none');
+            dom.exportUI.classList.remove('opacity-50', 'pointer-events-none');
+            dom.timer.parentElement.classList.remove('bg-red-900/30', 'bg-yellow-900/30', 'border-red-800/40', 'border-yellow-700/40');
+            dom.timer.parentElement.classList.add('bg-slate-900/50');
+            updateStatus('Готово к записи', 'bg-emerald-500');
+
+            // Export Setup
+            const blob = new Blob(app.chunks, { type: 'audio/webm' });
+            const url = URL.createObjectURL(blob);
+            const fname = `rec_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.webm`;
             
-            state.mediaRecorder.stop();
-            state.mediaRecorder.onstop = () => {
-                const blob = new Blob(state.recordedChunks, { type: 'audio/webm' });
-                const url = URL.createObjectURL(blob);
-                
-                els.dlAudio.onclick = () => {
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `record_${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.webm`;
-                    a.click();
-                };
-                log('Аудиофайл готов к скачиванию', 'success');
-            };
-
-            stopTranscription();
-
-            // UI
-            els.btnPause.classList.add('hidden');
-            els.btnStop.classList.add('hidden');
-            els.btnStart.classList.remove('hidden');
-            els.btnStart.innerHTML = '<i class="fas fa-redo"></i> Перезаписать';
-            els.exportPanel.classList.remove('opacity-50', 'pointer-events-none');
-            log('Запись остановлена');
+            dom.dlAudio.onclick = () => { const a=document.createElement('a'); a.href=url; a.download=fname; a.click(); };
+            log('Аудиофайл сформирован', 'success');
         }
 
-        // --- Transcription Logic (Web Speech API) ---
-        // NOTE: SpeechRecognition typically picks up the DEFAULT system microphone.
-        // It does NOT natively support passing a custom MediaStream (like our mixed stream) in standard Chrome.
-        // However, to fulfill the request structure, we initialize it here.
-        // If the user's environment supports routing mixed audio to input (e.g. Stereo Mix), this works.
-        // Otherwise, it will capture the Mic only, which matches the standard browser limitation,
-        // but the code structure is correct for a "Mixed" source if the API supported it.
-        
-        function startTranscription() {
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                log('Транскрибация не поддерживается в этом браузере.', 'error');
-                return;
-            }
+        // --- Speech API ---
+        function startSpeech() {
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SR) { log('Speech API недоступен', 'warn'); return; }
+            app.recognition = new SR();
+            app.recognition.lang = 'ru-RU';
+            app.recognition.continuous = true;
+            app.recognition.interimResults = true;
+            app.recognition.maxAlternatives = 1;
 
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            state.recognition = new SpeechRecognition();
-            state.recognition.lang = 'ru-RU';
-            state.recognition.continuous = true;
-            state.recognition.interimResults = true;
-            state.recognition.maxAlternatives = 1;
-
-            state.recognition.onstart = () => log('Распознавание речи запущено', 'info');
-            
-            state.recognition.onresult = (event) => {
-                let interimTranscript = '';
-                let finalTranscript = '';
-
-                for (let i = event.resultIndex; i < event.results.length; ++i) {
-                    if (event.results[i].isFinal) {
-                        finalTranscript += event.results[i][0].transcript;
-                        state.phraseCount++;
-                        els.phraseCount.innerText = `${state.phraseCount} фраз`;
-                        appendToTranscript(finalTranscript, true);
+            app.recognition.onresult = (e) => {
+                let interim = '', final = '';
+                for (let i = e.resultIndex; i < e.results.length; i++) {
+                    if (e.results[i].isFinal) {
+                        final += e.results[i][0].transcript;
+                        app.phraseCount++;
+                        dom.phraseCounter.textContent = `${app.phraseCount} фраз`;
+                        addTranscript(final, true);
                     } else {
-                        interimTranscript += event.results[i][0].transcript;
+                        interim += e.results[i][0].transcript;
                     }
                 }
-                if (interimTranscript) {
-                    appendToTranscript(interimTranscript, false);
-                }
+                if (interim) addTranscript(interim, false);
             };
-
-            state.recognition.onerror = (event) => {
-                if (event.error !== 'no-speech') {
-                    log(`Ошибка распознавания: ${event.error}`, 'error');
-                }
-            };
-
-            state.recognition.onend = () => {
-                // Auto restart if we are still "recording"
-                if (state.isRecording) {
-                    try { state.recognition.start(); } catch(e) {}
-                } else {
-                    log('Распознавание остановлено');
-                }
-            };
-
-            try {
-                state.recognition.start();
-            } catch(e) {
-                log('Не удалось запустить распознавание', 'error');
-            }
+            app.recognition.onerror = (e) => { if (e.error !== 'no-speech') log(`Mic err: ${e.error}`, 'error'); };
+            app.recognition.onend = () => { if (app.isRecording) { try { app.recognition.start(); } catch(e){} } };
+            
+            try { app.recognition.start(); log('Распознавание запущено'); } catch(e) { log('Ошибка старта распознавания', 'error'); }
         }
 
-        function stopTranscription() {
-            if (state.recognition) {
-                state.recognition.stop();
-            }
+        function stopSpeech() { if (app.recognition) try { app.recognition.stop(); } catch(e){} }
+
+        function addTranscript(text, isFinal) {
+            const oldInt = dom.transcript.querySelector('.interim');
+            if (oldInt) oldInt.remove();
+            if (dom.transcript.querySelector('.select-none')) dom.transcript.innerHTML = '';
+
+            const el = document.createElement('div');
+            el.className = isFinal ? 'mb-2 p-2.5 rounded-lg bg-slate-800/40 border-l-2 border-blue-500 text-slate-200' : 'mb-2 italic opacity-50 interim text-slate-400';
+            el.textContent = text;
+            dom.transcript.appendChild(el);
+            dom.transcript.scrollTop = dom.transcript.scrollHeight;
         }
 
-        function appendToTranscript(text, isFinal) {
-            // Remove old interim if exists
-            const oldInterim = els.transcriptBox.querySelector('.interim');
-            if (oldInterim) oldInterim.remove();
-
-            if (els.transcriptBox.querySelector('.text-slate-500')) {
-                els.transcriptBox.innerHTML = '';
-            }
-
-            const div = document.createElement('div');
-            div.className = isFinal ? 'mb-2 p-2 rounded bg-slate-800/50 border-l-2 border-blue-500' : 'mb-2 italic opacity-60 interim';
-            div.innerText = text;
-            els.transcriptBox.appendChild(div);
-            els.transcriptBox.scrollTop = els.transcriptBox.scrollHeight;
-        }
-
-        // --- Text Download ---
-        function downloadTranscript() {
-            const text = els.transcriptBox.innerText;
-            if (!text) return;
-            const blob = new Blob([text], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
+        dom.dlText.onclick = () => {
+            const txt = dom.transcript.innerText;
+            if (!txt) return;
+            const blob = new Blob([txt], { type: 'text/plain' });
             const a = document.createElement('a');
-            a.href = url;
-            a.download = `transcript_${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.txt`;
+            a.href = URL.createObjectURL(blob);
+            a.download = `trans_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.txt`;
             a.click();
-            log('Текст сохранен', 'success');
+            log('Текст сохранен');
+        };
+
+        // --- Helpers ---
+        function updateStatus(txt, dotClass) {
+            dom.status.innerHTML = `<span class="w-2 h-2 rounded-full ${dotClass}"></span> ${txt}`;
+            dom.status.classList.remove('text-slate-400', 'bg-slate-800/60');
+            dom.status.classList.add('text-emerald-400', 'bg-emerald-900/20', 'border-emerald-700/40');
         }
 
-        // --- Event Listeners ---
-        els.btnConnect.addEventListener('click', connectSources);
-        els.btnStart.addEventListener('click', startRecording);
-        els.btnPause.addEventListener('click', pauseRecording);
-        els.btnStop.addEventListener('click', stopRecording);
-        els.dlText.addEventListener('click', downloadTranscript);
-
+        // --- Events ---
+        dom.btnInit.onclick = () => { if (isSecure) initAudio(); else dom.securityBanner.classList.remove('hidden'); };
+        dom.btnStart.onclick = startRec;
+        dom.btnPause.onclick = togglePause;
+        dom.btnStop.onclick = stopRec;
     </script>
 </body>
 </html>
-
